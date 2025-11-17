@@ -43,7 +43,7 @@ function QuestionPage() {
   const handleSubmit = async () => {
     if (!question) return;
     try {
-      const res = await fetch("http://127.0.0.1:5000/ask-question", {
+      const res = await fetch("/ask-question", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question }),
