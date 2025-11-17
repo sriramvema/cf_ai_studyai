@@ -3,7 +3,7 @@ import { Document, Page, pdfjs } from "react-pdf";
 import { useLocation } from "react-router-dom";
 
 pdfjs.GlobalWorkerOptions.workerSrc = 
-  `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+  `/pdf.worker.min.js`;
 
 
 function QuestionPage() {
