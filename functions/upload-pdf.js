@@ -42,7 +42,7 @@ export async function onRequestPost(context) {
     },
   }));
 
-  await env.PDF_INDEX.upsert(vectorItems);
+  await env.VECTORIZE.upsert(vectorItems);
 
   return Response.json({
     message: `PDF '${fileName}' uploaded and indexed`,
