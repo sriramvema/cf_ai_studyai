@@ -1,25 +1,29 @@
 import { useState, useRef, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import { Document, Page, pdfjs } from "react-pdf";
+import { useLocation } from "react-router-dom";
 
-// PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = 
+  `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+
 
 function QuestionPage() {
-  const location = useLocation();
-  const initialPdfUrl = location.state?.pdfUrl || null;
-
   const [question, setQuestion] = useState("");
   const [response, setResponse] = useState(null);
   const [retrievedPages, setRetrievedPages] = useState([]);
-  const [fileUrl, setFileUrl] = useState(initialPdfUrl);
   const [numPages, setNumPages] = useState(null);
   const [pageWidth, setPageWidth] = useState(0);
   const [jumpPage, setJumpPage] = useState("");
-
+  
   const leftPaneRef = useRef(null);
   const pageRefs = useRef({});
-
+  const location = useLocation();
+  const [fileUrl, setFileUrl] = useState("");
+  
+  useEffect(() => {
+    if (location.state?.pdfUrl) {
+      setFileUrl(location.state.pdfUrl);
+    }
+  }, [location.state]);
   useEffect(() => {
     const updateWidth = () => {
       if (leftPaneRef.current) setPageWidth(leftPaneRef.current.offsetWidth);
@@ -123,7 +127,7 @@ function QuestionPage() {
           </button>
         </div>
 
-        {/* PDF pages container (flex-grow to fill left column) */}
+        {/* PDF pages container */}
         <div style={{ flexGrow: 1, background: "#070712" }}>
           {fileUrl && (
             <Document file={fileUrl} onLoadSuccess={onDocumentLoadSuccess}>
