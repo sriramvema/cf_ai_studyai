@@ -9,13 +9,13 @@ from langchain_core.vectorstores import InMemoryVectorStore
 app = Flask(__name__)
 CORS(app)
 
-# Globals
+
 pages = []
 vector_store = None
-# Where PDFs will be saved
+
 UPLOAD_FOLDER = "static"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-anthropic_key = os.getenv("ANTHROPIC_API_KEY")
+
 @app.route('/')
 def index():
     return "Flask backend is running!"
@@ -33,10 +33,10 @@ def upload_pdf():
 
     saved_filename = file.filename
     filepath = os.path.join(UPLOAD_FOLDER, saved_filename)
-    file.save(filepath)  # Save the file to static folder
-    last_uploaded_pdf = saved_filename  # Save last uploaded
+    file.save(filepath) 
+    last_uploaded_pdf = saved_filename  
 
-    # Read PDF for embeddings
+  
     doc = fitz.open(filepath)
     pages = [page.get_text() for page in doc]
 
@@ -51,7 +51,7 @@ def upload_pdf():
     return jsonify({
         "num_pages": len(pages),
         "message": f"PDF '{file.filename}' uploaded and indexed",
-        "pdf_url": f"http://127.0.0.1:5000/static/{saved_filename}"  # ✅ Correct URL
+        "pdf_url": f"http://127.0.0.1:5000/static/{saved_filename}"
     })
 
 
@@ -67,19 +67,19 @@ def question():
 
     print(f"User asked: {user_question}")
 
-    # Search similar docs without a hard limit
+    
     docs_with_scores = vector_store.similarity_search_with_score(user_question)
     context = ""
     retrieved_pages = []
 
-    # Collect all retrieved pages
+ 
     for doc, score in docs_with_scores:
         page_num = doc.metadata['page']
         retrieved_pages.append(page_num)
         context += doc.page_content + "\n"
         print(f"Page {page_num}, score: {score}...\n")
 
-    # Sort pages in ascending order
+
     sorted_retrieved = sorted(set(retrieved_pages))
 
     response = answer(user_question, context)
@@ -96,10 +96,10 @@ def question():
 
 import anthropic
 def answer(question, context):
-    client = anthropic.Anthropic(anthropic_key)
+    client = anthropic.Anthropic(api_key="YOUR ANTHROPIC API KEY")
 
     response = client.messages.create(
-        model="claude-3-haiku-20240307",  # Or use "claude-3-haiku-20240307" for faster results
+        model="claude-3-haiku-20240307",  
         max_tokens=500,
         temperature=0.7,
         messages=[
