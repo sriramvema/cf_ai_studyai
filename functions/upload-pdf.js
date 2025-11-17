@@ -2,7 +2,7 @@ export async function onRequestPost(context) {
   const { request, env } = context;
 
   const formData = await request.formData();
-  const file = formData.get("file");
+  const file = formData.get("pdf");
 
   if (!file) {
     return new Response(JSON.stringify({ error: "No file uploaded" }), {
