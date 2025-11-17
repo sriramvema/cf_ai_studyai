@@ -10,28 +10,35 @@ export async function onRequestPost(context) {
     });
   }
 
+  // ⭐ SAFETY CHECK ADDED HERE ⭐
+  if (!env.AI) {
+    return Response.json({
+      error: "AI not available in local dev. Deploy to test AI.",
+    });
+  }
+
   const arrayBuffer = await file.arrayBuffer();
   const fileName = file.name;
 
-  // --- 1. Save the PDF to R2 ---
+  // --- 1. Save PDF to R2 ---
   await env.PDFS_BUCKET.put(fileName, arrayBuffer);
 
-  // --- 2. Extract text using Cloudflare's PDF parser ---
+  // --- 2. Extract text using Cloudflare AI ---
   const textReq = await env.AI.run("@cf/pdf-extract", {
     buffer: [...new Uint8Array(arrayBuffer)],
   });
 
-  const pages = textReq.pages.map(p => p.text);
+  const pages = textReq.pages.map((p) => p.text);
 
-  // --- 3. Embed with MiniLM-L6-v2 Workers AI embedding model ---
+  // --- 3. Embeddings ---
   const embedRes = await env.AI.run(
     "@cf/sentence-transformers/all-minilm-l6-v2",
     { text: pages }
   );
 
-  const vectors = embedRes.data; // array of embedding vectors
+  const vectors = embedRes.data;
 
-  // --- 4. Store embeddings in Vectorize ---
+  // --- 4. Vectorize ---
   const vectorItems = vectors.map((vec, i) => ({
     id: `page-${i}`,
     values: vec,
@@ -49,4 +56,3 @@ export async function onRequestPost(context) {
     num_pages: pages.length,
   });
 }
-
