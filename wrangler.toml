@@ -7,7 +7,7 @@ binding = "PDFS_BUCKET"
 bucket_name = "pdfs"
 
 [[vectorize]]
-binding = "PDF_INDEX"
+binding = "VECTORIZE"
 index_name = "pdf-index"
 
 [[kv_namespaces]]
