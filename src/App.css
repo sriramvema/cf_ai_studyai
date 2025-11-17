@@ -1,0 +1,114 @@
+.App {
+  text-align: center;
+  /* Background image */
+  background-image: url('/public/background.png'); /* put your image in the public folder */
+  background-size: cover;        /* cover entire screen */
+  background-position: center;   /* center the image */
+  background-repeat: no-repeat;  /* don't repeat */
+  min-height: 100vh;             /* ensure it covers full viewport height */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #a0d2eb;                /* fallback text color */
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin-top: 15px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: transparent;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: #a0d2eb;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.main-title {
+  margin: 0;
+  padding: 0;
+}
+
+.subtitle {
+  margin: 0;
+  padding: 0;
+  font-size: 1.2rem; /* Adjust for subtitle size */
+  font-weight: normal; /* Make it lighter than the main title */
+}
+
+/* Centered title container stays unchanged */
+.center-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Right-top quarter upload section */
+.right-section {
+  position: absolute;
+  top: 45%;       /* vertically center in top-right quarter */
+  left: 75%;      /* horizontally center in right half */
+  transform: translate(-50%, -50%); /* center the div exactly at that point */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.right-section h4,
+.right-section h5 {
+  margin: 0;
+  padding: 0;
+}
+
+/* Right section text spacing */
+.right-section h5 {
+  margin-bottom: 6rem; /* increase space below h5 */
+}
+
+.right-section h4 {
+  margin-top: 0;       /* ensure no extra top margin */
+  margin-bottom: 0.5rem; /* space between h3 and input */
+}
+
+/* Optional: add a little space above the button */
+.right-section button {
+  margin-top: 1rem;  /* space between input and button */
+}
