@@ -1,51 +1,52 @@
 export async function onRequestPost(context) {
-  try {
-    const { request, env } = context;
+  const { request, env } = context;
 
-    const formData = await request.formData();
-    const file = formData.get("pdf");
+  const formData = await request.formData();
+  const file = formData.get("file");
 
-    if (!file) {
-      return new Response(JSON.stringify({ error: "No PDF file uploaded" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" }
-      });
-    }
-
-    // Convert to ArrayBuffer
-    const buffer = await file.arrayBuffer();
-
-    // TODO:
-    // Upload to R2 or process PDF however you'd like.
-    // For now return mock response:
-
-    return new Response(JSON.stringify({
-      message: `PDF '${file.name}' received`,
-      size_kb: Math.round(buffer.byteLength / 1024)
-    }), {
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      }
-    });
-
-  } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), {
-      status: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      }
+  if (!file) {
+    return new Response(JSON.stringify({ error: "No file uploaded" }), {
+      status: 400,
     });
   }
-}
 
-export function onRequestOptions() {
-  return new Response(null, {
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type"
-    }
+  const arrayBuffer = await file.arrayBuffer();
+  const fileName = file.name;
+
+  // --- 1. Save the PDF to R2 ---
+  await env.PDFS_BUCKET.put(fileName, arrayBuffer);
+
+  // --- 2. Extract text using Cloudflare's PDF parser ---
+  const textReq = await env.AI.run("@cf/pdf-extract", {
+    buffer: [...new Uint8Array(arrayBuffer)],
+  });
+
+  const pages = textReq.pages.map(p => p.text);
+
+  // --- 3. Embed with MiniLM-L6-v2 Workers AI embedding model ---
+  const embedRes = await env.AI.run(
+    "@cf/sentence-transformers/all-minilm-l6-v2",
+    { text: pages }
+  );
+
+  const vectors = embedRes.data; // array of embedding vectors
+
+  // --- 4. Store embeddings in Vectorize ---
+  const vectorItems = vectors.map((vec, i) => ({
+    id: `page-${i}`,
+    values: vec,
+    metadata: {
+      page: i + 1,
+      source: fileName,
+      text: pages[i],
+    },
+  }));
+
+  await env.PDF_INDEX.upsert(vectorItems);
+
+  return Response.json({
+    message: `PDF '${fileName}' uploaded and indexed`,
+    num_pages: pages.length,
   });
 }
+
