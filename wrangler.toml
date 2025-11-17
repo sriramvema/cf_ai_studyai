@@ -1,6 +1,6 @@
-name = "pdf-ai-app"
+name = "cf_ai_studyai"
 compatibility_date = "2024-10-01"
-pages_build_output_dir = "./dist"
+pages_build_output_dir = "./build"
 
 [[r2_buckets]]
 binding = "PDFS_BUCKET"
@@ -11,8 +11,8 @@ binding = "PDF_INDEX"
 index_name = "pdf-index"
 
 [[kv_namespaces]]
-binding = "CHAT_HISTORY"
-id = "your-kv-id"
+binding = "PDF_KV"
+id = "9a38f8a6b38d4b638d54076970551e99"
 
 [vars]
 ANTHROPIC_API_KEY = "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"
