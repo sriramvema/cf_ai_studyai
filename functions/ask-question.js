@@ -4,7 +4,7 @@ export async function onRequestPost(context) {
   const { question, userId } = await request.json();
 
   // --- 1. Vector search ---
-  const searchRes = await env.PDF_INDEX.query({
+  const searchRes = await env.VECTORIZE.query({
     topK: 5,
     vector: (
       await env.AI.run("@cf/sentence-transformers/all-minilm-l6-v2", {
