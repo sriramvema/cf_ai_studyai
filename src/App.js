@@ -18,7 +18,7 @@ function Home() {
     setLoading(true);
 
     const formData = new FormData();
-    formData.append("file", selectedFile);
+    formData.append("pdf", selectedFile);
 
     try {
       const response = await fetch("/upload-pdf", {
